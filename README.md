@@ -1,4 +1,4 @@
-# VurDo-List
+# VueDo-List
 
 > ToDo List app using VueJS
 
