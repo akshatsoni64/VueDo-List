@@ -13,3 +13,8 @@ npm run dev
 # build for production with minification
 npm run build
 ```
+
+### Screenshots
+
+<img src="screenshots/1.png" width="100">
+<img src="screenshots/2.png" width="100">
