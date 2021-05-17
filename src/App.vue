@@ -21,20 +21,22 @@
         </div>
       </form>
 
+      <button v-if="deleteMultiple" class="btn btn-danger mb-3" @click="deleteMulti">Delete Selected</button>
+
       <ul class="list-group">
-        <li v-for="task_name in tasks" :key="task_name" class="list-group-item list-group-item-info">
+        <li v-for="(task_name,index) in tasks" :key="index" class="list-group-item list-group-item-info">
           <div class="row">
-            <div class="col" @click="loadData(task_name)">{{ task_name }}</div>
-            <div class="col text-right">
-              <i class="fa fa-trash" aria-hidden="true" @click="delTask(task_name)"></i>
+            <div class="col-2">
+              <input type="checkbox" @change="changeCheck" :id="task_name['index']" class="form-control">
             </div>
+            <div class="col" @click="loadData(index)">{{ task_name['task'] }}</div>
           </div>
         </li>
       </ul>
     </div>
   </div>
 </template>
-// updateIndex=taskName; taskName=task_name; update=true
+
 <script>
 export default {
   name: 'app',
@@ -43,27 +45,54 @@ export default {
       title: 'VueDo List',
       msg: 'Welcome to Your First ToDo List App with Vue.js',
       taskName: "",
-      tasks: ['Download VueJS', 'Install Node Modules', 'Run NodeJS Server'],
+      tasks: [
+        {"index": 0, "task": 'Download VueJS'},
+        {"index": 1, "task": 'Install Node Modules'},
+        {"index": 2, "task": 'Run NodeJS Server'}
+      ],
       error: false,
       update: false,
-      updateIndex: null
+      updateIndex: null,
+      ids: [],
+      deleteMultiple: false
     }
   },
   methods: {
-    loadData: function(item){
-      this.taskName=item
-      console.log(this.taskName)
-      this.updateIndex = this.taskName
+    deleteMulti: function(e){
+      console.log("Deleting Multiple tasks");
+      this.ids.forEach(id => {
+        console.log(id);
+        this.tasks = this.tasks.filter(function(task) {
+          return task['index'] != id;
+        });
+        console.log(this.tasks);
+      });
+      this.deleteMultiple = false;
+      this.ids = [];
+    },
+    changeCheck: function(e){
+      if(e.target.checked){
+        this.ids.push(e.target.id);
+      }
+      else{
+        this.ids = this.ids.filter((id) => {
+          return id != e.target.id
+        })
+      }
+      this.deleteMultiple = ((this.ids.length >= 1)) ? true : false;
+
+      console.log(this.ids);
+    },
+    loadData: function(index){
+      this.taskName = this.tasks[index]['task']
+      this.updateIndex = index
       this.update=true
     },
     addTask: function(){
       if(this.update == true){
 
         this.update = false
-
-        var ind = this.tasks.indexOf(this.updateIndex)
-        console.log(this.updateIndex)
-        this.tasks[ind] = this.taskName
+        this.tasks[this.updateIndex][this.updateIndex] = this.taskName
 
       }
       else{
@@ -77,14 +106,6 @@ export default {
 
       }
 
-      this.taskName = ''
-      console.log(this.tasks)
-    },
-    delTask: function(taskname){
-      this.tasks = this.tasks.filter((task)=>{
-        return task != taskname
-      })
-      this.update = false
       this.taskName = ''
     },
   }
