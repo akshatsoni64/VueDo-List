@@ -59,13 +59,10 @@ export default {
   },
   methods: {
     deleteMulti: function(e){
-      console.log("Deleting Multiple tasks");
       this.ids.forEach(id => {
-        console.log(id);
         this.tasks = this.tasks.filter(function(task) {
           return task['index'] != id;
         });
-        console.log(this.tasks);
       });
       this.deleteMultiple = false;
       this.ids = [];
@@ -80,8 +77,6 @@ export default {
         })
       }
       this.deleteMultiple = ((this.ids.length >= 1)) ? true : false;
-
-      console.log(this.ids);
     },
     loadData: function(index){
       this.taskName = this.tasks[index]['task']
@@ -96,9 +91,12 @@ export default {
 
       }
       else{
-
+        var theIndex = this.tasks.length;
         if(this.taskName != ''){
-          this.tasks.push(this.taskName)
+          this.tasks.push({
+            "index": theIndex,
+            "task": this.taskName
+            })
         }
         else{
           this.error = true
