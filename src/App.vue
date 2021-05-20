@@ -27,7 +27,7 @@
         <li v-for="(task_name,index) in tasks" :key="index" class="list-group-item list-group-item-info">
           <div class="row">
             <div class="col-2">
-              <input type="checkbox" @change="changeCheck" :id="task_name['index']" class="form-control">
+              <input type="checkbox" :checked="task_name['check']" @change="changeCheck" :id="task_name['index']" class="form-control">
             </div>
             <div class="col" @click="loadData(index)">{{ task_name['task'] }}</div>
           </div>
@@ -46,9 +46,13 @@ export default {
       msg: 'Welcome to Your First ToDo List App with Vue.js',
       taskName: "",
       tasks: [
-        {"index": 0, "task": 'Download VueJS'},
-        {"index": 1, "task": 'Install Node Modules'},
-        {"index": 2, "task": 'Run NodeJS Server'}
+        {"index": 0, "task": 'Download VueJS', "check": false},
+        {"index": 1, "task": 'Install Node Modules', "check": false},
+        {"index": 2, "task": 'Run NodeJS Server', "check": false},
+        {"index": 3, "task": 'Open App', "check": false},
+        {"index": 4, "task": 'Add Task', "check": false},
+        {"index": 5, "task": 'Update Task', "check": false},
+        {"index": 6, "task": 'Delete Task', "check": false}
       ],
       error: false,
       update: false,
@@ -57,37 +61,63 @@ export default {
       deleteMultiple: false
     }
   },
+  updated: function(){
+    console.log("UPDATED----");
+    this.tasks.forEach((task) => {
+      console.log(task.task,  "--", task.check);
+    });
+    console.log("----");
+  },
   methods: {
     deleteMulti: function(e){
-      this.ids.forEach(id => {
+      this.tasks.forEach((task) => {
+        console.log(task.task, task.check);
+      });
+      console.log("----");
+      var ids = [];
+      this.tasks.forEach((task) => {
+        if(task.check == true){
+          ids.push(task.index)
+        }
+      });
+      ids.forEach(id => {
         this.tasks = this.tasks.filter(function(task) {
           return task['index'] != id;
         });
       });
       this.deleteMultiple = false;
-      this.ids = [];
+      this.tasks.forEach((task) => {
+        console.log("DELETE:", task.task, task.check);
+      });
     },
+
     changeCheck: function(e){
-      if(e.target.checked){
-        this.ids.push(e.target.id);
-      }
-      else{
-        this.ids = this.ids.filter((id) => {
-          return id != e.target.id
-        })
-      }
-      this.deleteMultiple = ((this.ids.length >= 1)) ? true : false;
+      this.tasks[e.target.id]['check'] = e.target.checked
+      var count = 0
+      this.tasks.forEach((task) => {
+        if(task.check == true){
+          count = count + 1
+        }
+      })
+      this.deleteMultiple = (count > 0) ? true : false
+      console.log("changeCheck");
+      this.tasks.forEach((task) => {
+        console.log(task.task, task.check);
+      });
     },
+
     loadData: function(index){
+      console.log(this.tasks)
       this.taskName = this.tasks[index]['task']
       this.updateIndex = index
       this.update=true
     },
+
     addTask: function(){
       if(this.update == true){
 
         this.update = false
-        this.tasks[this.updateIndex][this.updateIndex] = this.taskName
+        this.tasks[this.updateIndex]['task'] = this.taskName
 
       }
       else{
@@ -95,7 +125,8 @@ export default {
         if(this.taskName != ''){
           this.tasks.push({
             "index": theIndex,
-            "task": this.taskName
+            "task": this.taskName,
+            "check": false
             })
         }
         else{
